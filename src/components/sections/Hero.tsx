@@ -102,20 +102,33 @@ export function Hero() {
         </div>
 
         {/* Right — portrait frame */}
-        <motion.div
+        {/* <motion.div
           className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-2xl lg:max-w-none"
           style={{ y: photoY }}
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
         >
-          {/* TODO: replace with a real portrait photo */}
+        
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/25 via-foreground/10 to-transparent backdrop-blur-md">
             <span className="select-none font-heading text-8xl font-bold text-foreground/15">
               {SITE_NAME.split(" ").map((w) => w[0]).join("")}
             </span>
           </div>
-        </motion.div>
+        </motion.div> */}
+        <motion.div
+  className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-2xl lg:max-w-none"
+  style={{ y: photoY }}
+  initial={{ opacity: 0, scale: 0.94 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.8, ease: EASE, delay: 0.3 }}
+>
+  <img
+    src="/mahe.png" // Replace with your image path
+    alt="Maheshwaran"
+    className="h-full w-full object-cover opacity-60"
+  />
+</motion.div>
       </motion.div>
 
       {/* Scroll hint */}
