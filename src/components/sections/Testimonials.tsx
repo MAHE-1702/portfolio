@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { AmbientOrbs } from "@/components/ui/AmbientOrbs";
+import { EASE } from "@/lib/motion";
 
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+import "swiper/css";
 
 // TODO: replace with real client testimonials
 const TESTIMONIALS = [
@@ -16,8 +19,6 @@ const TESTIMONIALS = [
     name: "Arjun Mehta",
     role: "Project Manager",
     company: "TechVentures",
-    initials: "AM",
-    color: "#00E5FF",
   },
   {
     quote:
@@ -25,8 +26,6 @@ const TESTIMONIALS = [
     name: "Priya Nair",
     role: "Startup Founder",
     company: "NovaBuild",
-    initials: "PN",
-    color: "#7C3AED",
   },
   {
     quote:
@@ -34,91 +33,70 @@ const TESTIMONIALS = [
     name: "Karthik Sundaram",
     role: "Product Lead",
     company: "DataStack",
-    initials: "KS",
-    color: "#FF6B00",
   },
 ] as const;
 
 export function Testimonials() {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   return (
     <section
       id="testimonials"
-      className="relative min-h-screen bg-background px-6 py-24 sm:px-8"
+      className="mil-soft relative bg-background px-6 py-24 sm:px-8"
     >
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute left-0 top-1/4 h-96 w-96 rounded-full bg-secondary/10 blur-[150px]" />
-      <AmbientOrbs />
+      <div className="mx-auto max-w-3xl">
+        <SectionHeading title="Testimonials" subtitle="What clients say" align="center" />
 
-      <div className="relative z-10 mx-auto max-w-6xl">
-        <SectionHeading
-          title="Testimonials"
-          subtitle="What clients say"
-          align="center"
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: EASE }}
+        >
+          <Quote size={36} className="mx-auto mb-6 text-primary" aria-hidden="true" />
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.6, ease: EASE, delay: i * 0.12 }}
-              className={i === 2 ? "md:col-span-2 lg:col-span-1" : ""}
-            >
-              {/* Idle float — phase staggered per card so they don't sync.
-                  Disabled entirely under prefers-reduced-motion. */}
-              <motion.figure
-                animate={reduced ? undefined : { y: [0, -10, 0] }}
-                transition={
-                  reduced
-                    ? undefined
-                    : {
-                        repeat: Infinity,
-                        duration: 3 + i * 0.8,
-                        ease: "easeInOut",
-                      }
-                }
-                className="glass-card flex h-full flex-col gap-5 p-6 transition-colors duration-300 hover:border-primary/40"
-              >
-                <Quote
-                  size={32}
-                  className="shrink-0 opacity-80"
-                  style={{ color: t.color }}
-                  aria-hidden="true"
-                />
-
-                <blockquote className="flex-1 text-sm leading-relaxed text-foreground/75">
-                  “{t.quote}”
-                </blockquote>
-
-                <figcaption className="flex items-center gap-3 border-t border-primary/10 pt-4">
-                  <span
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold text-background"
-                    style={{ backgroundColor: t.color }}
-                    aria-hidden="true"
-                  >
-                    {t.initials}
-                  </span>
-                  <span className="flex flex-col">
-                    <span className="font-heading text-sm font-bold text-foreground">
+          <Swiper
+            modules={[Navigation]}
+            onSwiper={(s) => { swiperRef.current = s; }}
+            spaceBetween={40}
+            slidesPerView={1}
+          >
+            {TESTIMONIALS.map((t) => (
+              <SwiperSlide key={t.name}>
+                <div className="flex flex-col items-center gap-6 pb-4 text-center">
+                  <blockquote className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
+                    “{t.quote}”
+                  </blockquote>
+                  <figcaption className="flex flex-col">
+                    <span className="font-heading text-base font-semibold text-foreground">
                       {t.name}
                     </span>
-                    <span className="text-xs text-muted">
+                    <span className="text-sm text-muted">
                       {t.role} · {t.company}
                     </span>
-                  </span>
-                </figcaption>
-              </motion.figure>
-            </motion.div>
-          ))}
-        </div>
+                  </figcaption>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div className="mt-8 flex items-center justify-center gap-6">
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-foreground/20 text-foreground/60 transition hover:border-primary/60 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-foreground/20 text-foreground/60 transition hover:border-primary/60 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              aria-label="Next testimonial"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

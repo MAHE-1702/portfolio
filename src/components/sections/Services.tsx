@@ -11,10 +11,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { TiltCard } from "@/components/ui/TiltCard";
-import { AmbientOrbs } from "@/components/ui/AmbientOrbs";
-
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+import { EASE } from "@/lib/motion";
 
 const SERVICES = [
   {
@@ -56,49 +53,37 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="services" className="relative min-h-screen bg-background px-6 py-24 sm:px-8">
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute right-0 top-1/3 h-96 w-96 rounded-full bg-primary/8 blur-[140px]" />
-      <AmbientOrbs />
-
-      <div className="relative z-10 mx-auto max-w-6xl">
+    <section id="services" className="mil-dark relative bg-background px-6 py-24 sm:px-8">
+      <div className="mx-auto max-w-6xl">
         <SectionHeading
           title="What I Build"
           subtitle="End-to-end services from design system to production deploy."
           align="center"
         />
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 divide-y divide-foreground/10 border-t border-foreground/10 sm:grid-cols-2 lg:grid-cols-3 lg:divide-x">
           {SERVICES.map(({ icon: Icon, title, desc }, i) => (
-            <motion.div
+            <motion.a
               key={title}
-              initial={{ opacity: 0, y: 32 }}
+              href="#contact"
+              className="group flex flex-col gap-4 p-8 transition-colors duration-300 hover:bg-foreground/[0.03]"
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, ease: EASE, delay: i * 0.07 }}
+              transition={{ duration: 0.55, ease: EASE, delay: i * 0.05 }}
             >
-              <TiltCard className="group h-full">
-                <div
-                  className="glass-card flex h-full flex-col gap-4 p-6 transition-all duration-300
-                    hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                    <Icon size={24} className="text-primary" />
-                  </div>
+              <Icon size={26} className="text-primary" />
 
-                  <h3 className="font-heading text-lg font-bold text-foreground">
-                    {title}
-                  </h3>
+              <h3 className="font-heading text-lg font-semibold text-foreground">
+                {title}
+              </h3>
 
-                  <p className="flex-1 text-sm leading-relaxed text-foreground/60">
-                    {desc}
-                  </p>
+              <p className="flex-1 text-sm leading-relaxed text-muted">
+                {desc}
+              </p>
 
-                  {/* Bottom accent bar — reveals on hover */}
-                  <div className="h-px w-0 rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 group-hover:w-full" />
-                </div>
-              </TiltCard>
-            </motion.div>
+              <span className="h-px w-8 bg-primary transition-all duration-300 group-hover:w-16" />
+            </motion.a>
           ))}
         </div>
       </div>

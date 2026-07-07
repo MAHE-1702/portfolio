@@ -2,16 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { EASE } from "@/lib/motion";
 
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+const LINES = [
+  { text: "Building", thin: true },
+  { text: "Digital", thin: false },
+  { text: "Experiences", thin: true },
+] as const;
+
+const lineVariants = {
+  hidden:  { y: "110%" },
+  visible: { y: "0%" },
+};
 
 /**
- * Branded first-visit loading overlay.
- *
- * Shows a full-screen splash with the site name and a progress bar that fills
- * over ~1.5s, then fades out. Only displays once per browser session
- * (tracked via `sessionStorage`). Skipped entirely when the user prefers
- * reduced motion.
+ * Branded first-visit loading overlay, matching the Ashley template's
+ * preloader technique: a staggered thin/bold line reveal plus a wipe-reveal
+ * wordmark, rather than a literal progress bar. Only displays once per
+ * browser session (tracked via `sessionStorage`). Skipped entirely when the
+ * user prefers reduced motion.
  */
 export function PageLoader() {
   const [visible, setVisible] = useState(false);
@@ -40,8 +49,7 @@ export function PageLoader() {
       setVisible(false);
     };
 
-    // Hard cap — fade out after the bar has filled (~1.5s + buffer).
-    const timer = window.setTimeout(finish, 1800);
+    const timer = window.setTimeout(finish, 2400);
 
     return () => window.clearTimeout(timer);
   }, []);
@@ -54,27 +62,48 @@ export function PageLoader() {
       {visible && (
         <motion.div
           key="page-loader"
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+          className="mil-dark fixed inset-0 z-[100] flex flex-col items-center justify-center gap-10 bg-background"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: EASE }}
         >
-          <motion.span
-            className="bg-gradient-to-r from-primary to-secondary bg-clip-text font-heading text-4xl font-bold tracking-tight text-transparent sm:text-6xl"
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE }}
-          >
-            Maheshwaran
-          </motion.span>
+          {/* Staggered thin/bold line reveal */}
+          <div className="flex flex-col items-center">
+            {LINES.map((line, i) => (
+              <div key={line.text} className="overflow-hidden">
+                <motion.p
+                  className={`font-heading text-2xl leading-tight text-foreground sm:text-3xl ${
+                    line.thin ? "font-light" : "font-bold"
+                  }`}
+                  variants={lineVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.6, ease: EASE, delay: 0.15 + i * 0.12 }}
+                >
+                  {line.text}
+                </motion.p>
+              </div>
+            ))}
+          </div>
 
-          {/* Progress bar */}
-          <div className="mt-7 h-[2px] w-44 overflow-hidden rounded-full bg-foreground/10 sm:w-56">
+          {/* Wipe-reveal wordmark */}
+          <div className="relative overflow-hidden">
+            <span className="font-heading text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+              Maheshwaran.
+            </span>
+            <motion.span
+              className="mt-2 block text-sm italic tracking-wide text-muted sm:text-base"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+            >
+              Know every path, but choose the right one.
+            </motion.span>
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="absolute inset-0 origin-left bg-primary"
+              initial={{ scaleX: 1 }}
+              animate={{ scaleX: 0 }}
+              transition={{ duration: 0.6, ease: EASE, delay: 0.55 }}
             />
           </div>
         </motion.div>

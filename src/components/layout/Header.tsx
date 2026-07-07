@@ -2,130 +2,119 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import { NAV_LINKS, SITE_NAME } from "@/lib/constants";
+import { Menu, X, ArrowUp } from "lucide-react";
+import { NAV_LINKS, SITE_NAME, EMAIL } from "@/lib/constants";
+import { WireframeShape } from "@/components/ui/WireframeShape";
+import { EASE } from "@/lib/motion";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setShowBackToTop(window.scrollY > window.innerHeight * 0.6);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Lock body scroll while the overlay menu is open
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 768) setIsMenuOpen(false);
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [isMenuOpen]);
 
   const closeMenu = () => setIsMenuOpen(false);
   const [firstName] = SITE_NAME.split(" ");
 
   return (
     <>
-      <header
-        className={`fixed left-0 right-0 top-0 z-40 transition-all duration-300 ${
-          scrolled
-            ? "py-3 backdrop-blur-md bg-background/90 border-b border-primary/15 shadow-lg shadow-background/50"
-            : "py-5 bg-transparent"
-        }`}
-      >
-        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between">
-          {/* Logo */}
-          <a
+      {/* Persistent corner frame — logo top-left, hamburger top-right.
+          Fixed white + mix-blend-difference so it stays legible over any
+          section color underneath, regardless of scroll position (a fixed
+          element can't read the CSS variables of whatever section it's
+          currently floating over). */}
+      <div className="fixed left-0 right-0 top-0 z-40 flex items-center justify-between px-6 py-5 mix-blend-difference sm:px-8">
+        <a
+          href="#hero"
+          className="font-heading text-xl font-bold text-white transition-opacity duration-200 hover:opacity-70"
+        >
+          {firstName}.
+        </a>
+
+        <button
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 text-white transition-opacity hover:opacity-70"
+          onClick={() => setIsMenuOpen((v) => !v)}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
+          aria-controls="mil-overlay-menu"
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Back-to-top corner link */}
+      <AnimatePresence>
+        {showBackToTop && !isMenuOpen && (
+          <motion.a
             href="#hero"
-            className="font-heading text-xl font-bold text-foreground hover:text-primary transition-colors duration-200"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-foreground/20 bg-background/80 text-foreground backdrop-blur-sm transition-colors hover:border-primary/60 hover:text-primary sm:right-8"
+            aria-label="Back to top"
           >
-            {firstName}
-            <span className="text-primary">.</span>
-          </a>
+            <ArrowUp size={18} />
+          </motion.a>
+        )}
+      </AnimatePresence>
 
-          {/* Desktop nav */}
-          <nav
-            className="hidden md:flex items-center gap-8"
-            aria-label="Main navigation"
-          >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="relative text-sm font-medium text-foreground/70 hover:text-primary transition-colors duration-200 group"
-              >
-                {link.label}
-                <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </nav>
-
-          {/* Hamburger toggle */}
-          <button
-            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
-            onClick={() => setIsMenuOpen((v) => !v)}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-drawer"
-          >
-            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile drawer */}
+      {/* Full-screen overlay menu — used at all breakpoints */}
       <AnimatePresence>
         {isMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              key="backdrop"
+          <motion.nav
+            id="mil-overlay-menu"
+            key="overlay-menu"
+            initial={{ clipPath: "circle(0% at 100% 0%)" }}
+            animate={{ clipPath: "circle(150% at 100% 0%)" }}
+            exit={{ clipPath: "circle(0% at 100% 0%)" }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mil-dark fixed inset-0 z-50 flex flex-col justify-center overflow-hidden bg-background px-8 sm:px-16"
+            aria-label="Main navigation"
+          >
+            <WireframeShape className="right-[10%] top-[-60px] hidden sm:block" />
+
+            <ul className="flex flex-col gap-2">
+              {NAV_LINKS.map((link, i) => (
+                <motion.li
+                  key={link.href}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + i * 0.05, duration: 0.5, ease: EASE }}
+                >
+                  <a
+                    href={link.href}
+                    onClick={closeMenu}
+                    className="font-heading text-4xl font-semibold text-foreground/80 transition-colors duration-200 hover:text-primary sm:text-6xl"
+                  >
+                    {link.label}
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+
+            <motion.a
+              href={`mailto:${EMAIL}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-background/70 backdrop-blur-sm md:hidden"
-              onClick={closeMenu}
-              aria-hidden
-            />
-
-            {/* Slide-in drawer */}
-            <motion.nav
-              id="mobile-drawer"
-              key="drawer"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.28, ease: "easeInOut" }}
-              className="fixed bottom-0 right-0 top-0 z-50 flex w-72 flex-col border-l border-primary/15 bg-background/95 backdrop-blur-xl pt-24 px-8 gap-1 md:hidden"
-              aria-label="Mobile navigation"
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="mt-12 text-sm text-muted transition-colors hover:text-primary"
             >
-              {/* Close button inside drawer */}
-              <button
-                className="absolute right-5 top-5 p-2 text-foreground hover:text-primary transition-colors"
-                onClick={closeMenu}
-                aria-label="Close menu"
-              >
-                <X size={22} />
-              </button>
-
-              {NAV_LINKS.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.2 }}
-                  className="font-heading text-lg font-semibold text-foreground/80 hover:text-primary transition-colors border-b border-primary/10 py-4"
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-            </motion.nav>
-          </>
+              {EMAIL}
+            </motion.a>
+          </motion.nav>
         )}
       </AnimatePresence>
     </>

@@ -12,8 +12,7 @@ import {
   EMAIL,
   WHATSAPP,
 } from "@/lib/constants";
-
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+import { EASE } from "@/lib/motion";
 
 const SOCIALS = [
   { icon: GitBranch, label: "GitHub", href: GITHUB_URL },
@@ -32,12 +31,9 @@ export function Footer() {
   return (
     <footer
       id="footer"
-      className="relative border-t border-primary/10 bg-background px-6 pb-8 pt-16 sm:px-8"
+      className="mil-dark relative border-t border-foreground/10 bg-background px-6 pb-8 pt-16 sm:px-8"
       aria-label="Site footer"
     >
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-2/3 -translate-x-1/2 rounded-full bg-primary/5 blur-[120px]" />
-
       <div className="mx-auto max-w-6xl">
         {/* Top row */}
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
@@ -63,7 +59,7 @@ export function Footer() {
                   {...(external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-background/50 text-foreground/70 transition-all duration-300 hover:scale-110 hover:border-primary/50 hover:text-primary hover:shadow-lg hover:shadow-primary/20"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-foreground/20 text-foreground/70 transition-all duration-300 hover:scale-110 hover:border-primary hover:text-primary"
                 >
                   <Icon size={18} />
                 </a>
@@ -88,20 +84,19 @@ export function Footer() {
           ))}
         </nav>
 
-        {/* Animated accent underline */}
+        {/* Accent underline */}
         <motion.div
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.9, ease: EASE }}
-          className="mt-10 h-px origin-left bg-gradient-to-r from-primary via-secondary to-transparent"
+          className="mt-10 h-px origin-left bg-primary/40"
         />
 
         {/* Bottom bar */}
         <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted">
-            © {new Date().getFullYear()} {SITE_NAME}. Built with Next.js,
-            Three.js &amp; a lot of coffee.
+            © {new Date().getFullYear()} {SITE_NAME}. Built with Next.js &amp; a lot of coffee.
           </p>
 
           <MagneticButton variant="glass" onClick={scrollToTop}>

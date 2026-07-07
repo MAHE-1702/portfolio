@@ -24,6 +24,13 @@ export const COLOR_TOKENS = {
   foreground: "#e2e8f0",
 } as const;
 
+export const SKILLS = {
+  Frontend: ["React", "Next.js", "JavaScript", "TypeScript", "Redux", "Tailwind CSS"],
+  Backend:  ["Node.js", "Express.js", "MongoDB", "PostgreSQL", "REST API", "JWT"],
+  Mobile:   ["Flutter", "React Native"],
+  Tools:    ["Docker", "Git", "AWS", "Vercel", "Linux"],
+} as const;
+
 export const NAV_LINKS = [
   { label: "Home", href: "#hero" },
   { label: "About", href: "#about" },

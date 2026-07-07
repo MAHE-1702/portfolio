@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, GitBranch } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { EASE } from "@/lib/motion";
 
 export interface Project {
   id:          number;
@@ -19,8 +20,6 @@ interface Props {
   project: Project | null;
   onClose: () => void;
 }
-
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export function ProjectModal({ project, onClose }: Props) {
   const modalRef  = useRef<HTMLDivElement>(null);

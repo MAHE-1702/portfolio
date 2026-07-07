@@ -28,8 +28,7 @@ import {
   LINKEDIN_URL,
   GITHUB_URL,
 } from "@/lib/constants";
-
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+import { EASE } from "@/lib/motion";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -53,7 +52,7 @@ const CONTACT_ROWS = [
   { icon: GitBranch, label: "github.com/MAHE-1702", href: GITHUB_URL, ariaLabel: "GitHub" },
 ] as const;
 
-// Gentle tilt — max ~6deg (softer than the standard TiltCard ±12deg)
+// Gentle tilt — max ~6deg
 const SPRING = { stiffness: 150, damping: 22, mass: 0.6 };
 const MAX_TILT = 6;
 
@@ -115,9 +114,6 @@ export function Contact() {
       id="contact"
       className="relative min-h-screen bg-background px-6 py-24 sm:px-8"
     >
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute right-0 top-1/3 h-96 w-96 rounded-full bg-primary/8 blur-[150px]" />
-
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-start">
         {/* Left column — info */}
         <div>
@@ -139,9 +135,9 @@ export function Contact() {
                     {...(external
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}
-                    className="group flex items-center gap-3 rounded-xl border border-primary/15 bg-background/40 px-4 py-3 text-sm text-foreground/80 backdrop-blur-sm transition duration-300 hover:translate-x-1 hover:border-primary/40 hover:text-primary"
+                    className="group flex items-center gap-3 border-b border-foreground/10 py-3 text-sm text-foreground/80 transition duration-300 hover:translate-x-1 hover:text-primary"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/70 transition-colors group-hover:border-primary group-hover:text-primary">
                       <Icon size={18} />
                     </span>
                     <span className="truncate">{label}</span>
@@ -160,7 +156,6 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="glass-card p-6 sm:p-8"
           >
             {sent ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
@@ -186,7 +181,7 @@ export function Contact() {
                     id="name"
                     {...register("name")}
                     placeholder="Your name"
-                    className="w-full rounded-xl border border-primary/15 bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted/50 backdrop-blur-sm transition focus:border-primary/50 focus:outline-none"
+                    className="w-full border-b border-foreground/20 bg-transparent px-1 py-3 text-sm text-foreground placeholder:text-muted/50 transition focus:border-primary focus:outline-none"
                   />
                   {errors.name && (
                     <p className="mt-1 text-xs text-red-400">
@@ -204,7 +199,7 @@ export function Contact() {
                     type="email"
                     {...register("email")}
                     placeholder="you@example.com"
-                    className="w-full rounded-xl border border-primary/15 bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted/50 backdrop-blur-sm transition focus:border-primary/50 focus:outline-none"
+                    className="w-full border-b border-foreground/20 bg-transparent px-1 py-3 text-sm text-foreground placeholder:text-muted/50 transition focus:border-primary focus:outline-none"
                   />
                   {errors.email && (
                     <p className="mt-1 text-xs text-red-400">
@@ -221,7 +216,7 @@ export function Contact() {
                     id="subject"
                     {...register("subject")}
                     placeholder="Subject"
-                    className="w-full rounded-xl border border-primary/15 bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted/50 backdrop-blur-sm transition focus:border-primary/50 focus:outline-none"
+                    className="w-full border-b border-foreground/20 bg-transparent px-1 py-3 text-sm text-foreground placeholder:text-muted/50 transition focus:border-primary focus:outline-none"
                   />
                   {errors.subject && (
                     <p className="mt-1 text-xs text-red-400">
@@ -239,7 +234,7 @@ export function Contact() {
                     rows={5}
                     {...register("message")}
                     placeholder="Tell me about your project..."
-                    className="w-full resize-none rounded-xl border border-primary/15 bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted/50 backdrop-blur-sm transition focus:border-primary/50 focus:outline-none"
+                    className="w-full resize-none border-b border-foreground/20 bg-transparent px-1 py-3 text-sm text-foreground placeholder:text-muted/50 transition focus:border-primary focus:outline-none"
                   />
                   {errors.message && (
                     <p className="mt-1 text-xs text-red-400">

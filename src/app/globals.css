@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand color tokens */
-  --color-primary: #00E5FF;
-  --color-secondary: #7C3AED;
-  --color-accent: #FF6B00;
-  --color-background: #050816;
-  --color-foreground: #e2e8f0;
-  --color-muted: #64748b;
+  /* Brand color tokens — light section defaults */
+  --color-primary: #FF9800;
+  --color-secondary: #E65100;
+  --color-accent: #FF9800;
+  --color-background: #FFFFFF;
+  --color-foreground: #0D0D0D;
+  --color-muted: #808080;
 
   /* Font families — CSS vars injected by next/font */
-  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
-  --font-heading: var(--font-space-grotesk), "Space Grotesk", "Sora", sans-serif;
+  --font-sans: var(--font-outfit), "Outfit", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-outfit), "Outfit", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
 }
 
@@ -20,14 +20,11 @@
     box-sizing: border-box;
   }
 
-  html {
-    color-scheme: dark;
-  }
-
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     overflow-x: hidden;
+    transition: background-color 0.4s cubic-bezier(0, 0, 0.3642, 1), color 0.4s cubic-bezier(0, 0, 0.3642, 1);
   }
 
   /* Hide OS cursor on pointer-fine (mouse) devices; custom cursor takes over */
@@ -35,6 +32,59 @@
     * {
       cursor: none;
     }
+  }
+}
+
+/* Dark-section scope — re-declares the shared tokens locally so every
+   component that already reads bg-background/text-foreground/text-muted
+   flips automatically without per-component dark-mode classes. */
+.mil-dark {
+  --color-background: #0D0D0D;
+  --color-foreground: #FFFFFF;
+  --color-muted: #999999;
+  color-scheme: dark;
+}
+
+/* Soft-section scope — a slightly off-white light variant for visual
+   separation between two adjacent light sections (Ashley's mil-soft-bg). */
+.mil-soft {
+  --color-background: #F5F5F5;
+  --color-foreground: #0D0D0D;
+  --color-muted: #808080;
+}
+
+/* Slowly-tumbling CSS 3D dodecahedron (see WireframeShape.tsx) */
+.mil-dodecahedron {
+  transform-style: preserve-3d;
+  animation: mil-rotate 100s infinite linear;
+}
+
+@keyframes mil-rotate {
+  from {
+    transform: rotateX(0deg) rotateY(360deg) rotateZ(360deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(0deg) rotateZ(-360deg);
+  }
+}
+
+/* Infinite horizontal marquee — used by the Skills section */
+@keyframes mil-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.mil-marquee-track {
+  animation: mil-marquee linear infinite;
+}
+
+.mil-marquee-track.mil-marquee-reverse {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mil-marquee-track {
+    animation: none;
   }
 }
 
