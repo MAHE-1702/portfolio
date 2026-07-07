@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, GitBranch } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -14,6 +15,8 @@ export interface Project {
   liveUrl:     string | null;
   githubUrl:   string | null;
   color:       string;
+  /** Path under public/ to a real screenshot, e.g. "/projects/kriyaa.jpg". Falls back to a gradient placeholder when unset. */
+  image?:      string;
 }
 
 interface Props {
@@ -110,21 +113,27 @@ export function ProjectModal({ project, onClose }: Props) {
             exit={{ opacity: 0, scale: 0.94, y: "-46%" }}
             transition={{ duration: 0.3, ease: EASE }}
           >
-            {/* Hero gradient */}
-            <div
-              className="relative h-48 w-full rounded-t-2xl sm:h-56"
-              style={{
-                background: `linear-gradient(135deg, ${project.color}55 0%, ${project.color}22 100%)`,
-              }}
-            >
-              {/* Project initials */}
-              <span className="absolute inset-0 flex items-center justify-center font-heading text-5xl font-bold text-foreground/20 select-none">
-                {project.title
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((w) => w[0])
-                  .join("")}
-              </span>
+            {/* Hero image / gradient fallback */}
+            <div className="relative h-48 w-full overflow-hidden rounded-t-2xl sm:h-56">
+              {project.image ? (
+                <Image src={project.image} alt={project.title} fill className="object-cover" />
+              ) : (
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${project.color}55 0%, ${project.color}22 100%)`,
+                  }}
+                >
+                  {/* Project initials */}
+                  <span className="font-heading text-5xl font-bold text-foreground/20 select-none">
+                    {project.title
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((w) => w[0])
+                      .join("")}
+                  </span>
+                </div>
+              )}
 
               {/* Close button */}
               <button
